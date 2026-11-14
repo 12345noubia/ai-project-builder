@@ -1,29 +1,47 @@
-# Welcome to your Lovable project
+<div align="center">
 
-This project was built with [Lovable](https://lovable.dev).
+# Opero
 
-## Build with Lovable
+### Visual AI workflow automation platform
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+**Created by Noubia Hance**
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+Build, debug and automate workflows on a visual canvas, with an AI copilot and GitHub project import.
 
-## Development
+</div>
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+---
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+## Screenshots
+
+| Landing page | Sign in |
+| --- | --- |
+| ![Landing](docs/screenshots/landing.png) | ![Sign in](docs/screenshots/login.png) |
+
+> Screenshots of the signed-in workspace and workflow editor are not included yet.
+
+## Features
+
+- **Visual workflow builder**: triggers, validations, actions, identify, AI process, AI tasks, stop and outcome nodes, with labeled branches ("if valid", "else"), undo/redo, zoom, auto layout and autosave.
+- **Step inspector**: edit titles, types, descriptions, next-step conditions and required validation fields.
+- **Debug mode**: step-by-step simulated runs with live highlighting, saved to run history.
+- **AI copilot**: chat that knows the current workflow, plus "Get AI Insight" and generating a workflow from a description.
+- **GitHub import**: paste a public repo link; Opero reads its files and README and creates a project with workflows for its pages and features.
+- **Workspace**: projects, credentials, a data table of runs, analytics charts, settings (with dark mode) and a help centre.
+- **Sign in**: email/password and Google sign-in.
+- **Responsive**: works on phones, tablets and desktops.
+
+## Tech stack
+
+TanStack Start (React 19) · Tailwind CSS v4 · React Flow · Framer Motion · Lovable Cloud (database + auth) · Lovable AI Gateway
+
+## Getting started
+
+```bash
+bun install
+bun run dev
 ```
 
-## Built with
+## Author
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+Designed and created by **Noubia Hance**.

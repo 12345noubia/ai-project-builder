@@ -28,3 +28,6 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Workflow graphs are stored as React Flow node/edge JSON on `workflows` rows; `src/lib/flow.ts` owns node kinds and layout so AI output, GitHub import and the editor stay compatible.
+- AI and GitHub calls run in auth-protected server functions (`src/lib/*.functions.ts`) so keys and prompts stay server-side.
