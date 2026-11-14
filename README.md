@@ -19,6 +19,7 @@ Build, debug and automate workflows on a visual canvas, with an AI copilot and G
 | ![Landing](docs/screenshots/landing.png) | ![Sign in](docs/screenshots/login.png) |
 
 > Screenshots of the signed-in workspace and workflow editor are not included yet.
+<img width="959" height="477" alt="image" src="https://github.com/user-attachments/assets/2b3c121b-d586-4947-a360-44eb985a0006" />
 
 ## Features
 
