@@ -122,7 +122,7 @@ export async function downloadDocx(d: ReportData) {
     const { w, h } = await imgSize(src); const sc = Math.min(maxW / w, 1);
     return [new x.Paragraph({ spacing: { after: 160 }, children: [new x.ImageRun({ type: "png", data: dataUrlBytes(src), transformation: { width: Math.round(w * sc), height: Math.round(h * sc) } })] })];
   };
-  const cell = (text: string, bold = false, fill?: string) => new x.TableCell({ shading: fill ? { fill } : undefined, margins: { top: 80, bottom: 80, left: 120, right: 120 }, children: [new x.Paragraph({ children: [new x.TextRun({ text, bold })] })] });
+  const cell = (text: string, bold = false, fill?: string) => new x.TableCell({ ...(fill ? { shading: { fill } } : {}), margins: { top: 80, bottom: 80, left: 120, right: 120 }, children: [new x.Paragraph({ children: [new x.TextRun({ text, bold })] })] });
   const summaryTable = new x.Table({
     width: { size: 100, type: x.WidthType.PERCENTAGE },
     rows: ([[t.wf, d.workflow], [t.persona, d.persona], [t.date, d.date.toLocaleString(d.lang === "fr" ? "fr-FR" : "en-GB")], [t.steps, String(s.n)], [t.passed, String(s.ok)], [t.failed, String(s.f)], [t.result, s.f ? t.failure : t.success]] as [string, string][])
