@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { askModel, extractJson, GRAPH_SPEC } from "./ai.server";
+import { askModel, extractJson, GRAPH_SPEC, USECASE_SPEC, ERD_SPEC } from "./ai.server";
 import { parseRepoUrl } from "./repo-url";
 import type { SimpleEdge, SimpleNode } from "./flow";
 
@@ -31,12 +31,22 @@ export const analyzeRepo = createServerFn({ method: "POST" })
       const r = await gh(`repos/${parsed.owner}/${parsed.repo}/readme`);
       readme = atob(String(r.content).replace(/\n/g, "")).slice(0, 4000);
     } catch { /* no readme */ }
+    const schemaPaths = paths.filter((p) => /(schema\.(prisma|ts|sql|rb|py)|migrations?\/.*\.sql$|models?\.(py|ts|js)$|\.sql$|entities?\/)/i.test(p)).slice(0, 4);
+    let schema = "";
+    for (const sp of schemaPaths) {
+      try {
+        const r = await fetch(`https://raw.githubusercontent.com/${parsed.owner}/${parsed.repo}/${meta.default_branch}/${sp}`);
+        if (r.ok) schema += `\n--- ${sp} ---\n${(await r.text()).slice(0, 3000)}`;
+      } catch { /* skip */ }
+    }
     const text = await askModel(
       `You analyze a software repository and map it into an Opero project. Identify the main pages/screens and the main functionalities (user flows, APIs, jobs). For each, produce a workflow graph describing how it works end to end.
 Return JSON only: {"project_name":"...","summary":"one sentence","workflows":[{"name":"Page or feature name","category":"page|feature","graph":{...}}]}
-Each graph follows: ${GRAPH_SPEC}
-Produce 3-8 workflows.`,
-      [{ role: "user", content: `Repo: ${meta.full_name}\nDescription: ${meta.description ?? ""}\nLanguage: ${meta.language ?? ""}\nFiles (${paths.length}):\n${paths.slice(0, 400).join("\n")}\n\nREADME:\n${readme}` }],
+Page and feature graphs follow: ${GRAPH_SPEC}
+ALSO add one workflow named "Use cases" with category "usecase" following: ${USECASE_SPEC}
+If the repo has a database (schema files, migrations, models), ALSO add one workflow named "Database schema" with category "erd" following: ${ERD_SPEC}
+Produce 3-8 page/feature workflows plus those extras.`,
+      [{ role: "user", content: `Repo: ${meta.full_name}\nDescription: ${meta.description ?? ""}\nLanguage: ${meta.language ?? ""}\nFiles (${paths.length}):\n${paths.slice(0, 400).join("\n")}\n\nREADME:\n${readme}\n\nDATABASE FILES:${schema || " none found"}` }],
     );
     const out = extractJson<{ project_name: string; summary: string; workflows: { name: string; category: string; graph: { nodes: SimpleNode[]; edges: SimpleEdge[] } }[] }>(text);
     return { ...out, repo: meta.full_name as string, url: meta.html_url as string, fileCount: paths.length };

@@ -1,6 +1,6 @@
 import type { Edge, Node } from "@xyflow/react";
 
-export type NodeKind = "trigger" | "validate" | "action" | "identify" | "ai_process" | "ai_task" | "stop" | "end";
+export type NodeKind = "trigger" | "validate" | "action" | "identify" | "ai_process" | "ai_task" | "stop" | "end" | "actor" | "usecase" | "system" | "table";
 
 export interface FlowNodeData extends Record<string, unknown> {
   kind: NodeKind;
@@ -9,11 +9,14 @@ export interface FlowNodeData extends Record<string, unknown> {
   fields?: string[] | undefined;
   running?: boolean | undefined;
   done?: boolean | undefined;
+  failed?: boolean | undefined;
+  persona?: string | undefined;
+  bubble?: string | undefined;
 }
 
 export type FlowNode = Node<FlowNodeData, "flow">;
 
-export const KIND_META: Record<NodeKind, { label: string; color: string; pill?: boolean }> = {
+export const KIND_META: Record<NodeKind, { label: string; color: string; pill?: boolean; group?: DiagramType }> = {
   trigger: { label: "Trigger", color: "var(--node-trigger)" },
   validate: { label: "Validate", color: "var(--node-validate)" },
   action: { label: "Action", color: "var(--node-action)" },
@@ -22,7 +25,22 @@ export const KIND_META: Record<NodeKind, { label: string; color: string; pill?: 
   ai_task: { label: "AI Task", color: "var(--node-task)" },
   stop: { label: "Stop", color: "var(--node-stop)", pill: true },
   end: { label: "Outcome", color: "var(--node-end)", pill: true },
+  actor: { label: "Actor", color: "var(--node-trigger)", group: "usecase" },
+  usecase: { label: "Use case", color: "var(--node-ai)", group: "usecase" },
+  system: { label: "System boundary", color: "var(--node-action)", group: "usecase" },
+  table: { label: "DB table", color: "var(--node-end)", group: "erd" },
 };
+
+export type DiagramType = "workflow" | "usecase" | "erd";
+export const DIAGRAM_LABEL: Record<DiagramType, string> = { workflow: "Workflow", usecase: "Use case diagram", erd: "Database ERD" };
+export function kindsFor(t: DiagramType): NodeKind[] {
+  return NODE_KINDS.filter((k) => (KIND_META[k].group ?? "workflow") === t);
+}
+export function detectDiagram(kinds: NodeKind[]): DiagramType {
+  if (kinds.some((k) => k === "table")) return "erd";
+  if (kinds.some((k) => k === "actor" || k === "usecase")) return "usecase";
+  return "workflow";
+}
 
 export const NODE_KINDS = Object.keys(KIND_META) as NodeKind[];
 
